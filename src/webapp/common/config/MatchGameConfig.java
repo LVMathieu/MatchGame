@@ -1,16 +1,25 @@
 package webapp.common.config;
 
 import webapp.common.utils.Level;
-
-import java.util.Random;
+import webapp.common.utils.NumberUtils;
+import webapp.models.player.TrickyPlayer;
+import webapp.models.player.NoobiePlayer;
+import webapp.models.player.Player;
 
 public final class MatchGameConfig {
-    private static Level level;
-    private static int matches = 10;
+    private static int      matches     = 10;
+    private static boolean  isPlaying   = true;
+    private static boolean  isUserhasWon;
+    private static boolean  isIAhasWon;
+    private static String   user;
+    private static Level    level;
+    private static Player   player;
 
     public MatchGameConfig() { }
 
-    public static void setMatchGameConfig(final String levelMode) {
+    public static void setMatchGameConfig(final String levelMode, final String username) {
+        initUserPlayer(username);
+        initGameState();
         initConfig(levelMode);
     }
 
@@ -20,18 +29,7 @@ public final class MatchGameConfig {
                 "level=" + level.toString() + ',' +
                 "matches=" + matches + ']';
     }
-    /**
-     * This method is used for choosing a range of matches during the game. The number depends on the level mode.
-     * @param min min matches number value during the game depending on the level mode.
-     * @param max max matches number value during the game depending on the level mode.
-     * @return random matches number value during the game depending on the level mode.
-     */
-    private static int getRandomNumberInRange(final int min, final int max) {
-        if (min >= max) {
-            throw new IllegalArgumentException("Max must be greater than min");
-        }
-        return new Random().nextInt((max - min) + 1) + min;
-    }
+
 
     /**
      * This method is used for choosing a range of matches during the game. The number depends on the level mode.
@@ -40,11 +38,19 @@ public final class MatchGameConfig {
      */
     private static void initNumberOfMatches(final int min, final int max) {
         try {
-            matches = getRandomNumberInRange(min, max);
+            matches = NumberUtils.getRandomNumberInRange(min, max);
         } catch(final IllegalArgumentException ex) {
             // fixed by default
             matches = 10;
         }
+    }
+
+    private static void initUserPlayer(final String username) {
+        user = username;
+    }
+
+    private static void initGameState() {
+        isUserhasWon = isIAhasWon = false;
     }
 
     /**
@@ -54,13 +60,16 @@ public final class MatchGameConfig {
     private static void initConfig(final String newLevel) {
         if (newLevel.equalsIgnoreCase(Level.MEDIUM.toString())) {
             level = Level.MEDIUM;
+            player = new TrickyPlayer();
             initNumberOfMatches(15, 25);
         } else if (newLevel.equalsIgnoreCase(Level.EXPERT.toString())) {
             level = Level.EXPERT;
-            initNumberOfMatches(25, 30);
+            player = new TrickyPlayer();
+            matches = 24;
         } else {
             // level by default
             level = Level.NOOBIE;
+            player = new NoobiePlayer();
             matches = 10;
         }
     }
@@ -81,4 +90,38 @@ public final class MatchGameConfig {
     public static void setMatches(final int value) {
         matches = value;
     }
+
+    public static Player getPlayer() {
+        return player;
+    }
+
+
+    public static boolean getIsPlaying() {
+        return isPlaying;
+    }
+
+    public static void setIsPlaying() {
+        isPlaying = !isPlaying;
+    }
+
+    public static String getUsername() {
+        return user;
+    }
+
+    public static boolean getIsUserHasWon() {
+        return isUserhasWon;
+    }
+
+    public static void setIsUserHasWon() {
+        isUserhasWon = !isUserhasWon;
+    }
+
+    public static boolean getIsIAHasWon() {
+        return isIAhasWon;
+    }
+
+    public static void setIsIAHasWon() {
+        isIAhasWon = !isIAhasWon;
+    }
+
 }
