@@ -2,6 +2,13 @@ package webapp;
 
 import webapp.common.config.MatchGameConfig;
 
+/**
+ * Created by Mathieu Le Veve on 10/10/2019
+ * This class aims to manage the game logic.
+ * It initialises some configuration and manages the game lifecycle
+ * Date : 10/10/2019
+ *
+ */
 public class MatchGame implements IGame {
     private static MatchGameConfig gameConfig   = new MatchGameConfig();
 
@@ -10,18 +17,13 @@ public class MatchGame implements IGame {
 
     }
 
+    /**
+     * Init the configuration
+     * @param levelMode String level mode
+     * @param username String username
+     */
     public static void setMatchGame(final String levelMode, final String username) {
         MatchGameConfig.setMatchGameConfig(levelMode, username);
-    }
-
-
-    public static MatchGameConfig getMatchGameConfig() {
-        return gameConfig;
-    }
-
-    @Override
-    public String toString() {
-        return "MatchGame[" + gameConfig + ']';
     }
 
     /**
@@ -34,6 +36,11 @@ public class MatchGame implements IGame {
         return value < 1;
     }
 
+    /**
+     * PickUp 1, 2 or 3 matches
+     * @param value int
+     * @return int 1, 2 or 3 matches removed
+     */
     @Override
     public int pickUp(final int value) {
         final int currentMatchesNumber = MatchGameConfig.getMatches();
@@ -41,6 +48,10 @@ public class MatchGame implements IGame {
         return MatchGameConfig.getMatches();
     }
 
+    /**
+     * Apply the player turn
+     * @param value int value current option
+     */
     @Override
     public void playUserTurn(final int value) {
         final int updatedMatchesNumber = pickUp(value);
@@ -50,11 +61,18 @@ public class MatchGame implements IGame {
         changeTurn();
     }
 
+    /**
+     * Setup the player turn
+     */
     @Override
     public void changeTurn() {
         MatchGameConfig.setIsPlaying();
     }
 
+    /**
+     * Apply the player turn
+     * @return int Value of the option chooser by the IA player between 1 and 3 inclusive
+     */
     @Override
     public int playIATurn() {
         final int matchesRemoved = MatchGameConfig.getPlayer().playTurn(MatchGameConfig.getMatches());
@@ -66,6 +84,10 @@ public class MatchGame implements IGame {
         return matchesRemoved;
     }
 
+    /**
+     * Detects whom is the winner
+     * @return boolean True if the current Player is the winner
+     */
     @Override
     public boolean isWinner() {
         return MatchGameConfig.getIsUserHasWon() || MatchGameConfig.getIsIAHasWon();

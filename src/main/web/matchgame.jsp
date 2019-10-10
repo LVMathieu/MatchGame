@@ -1,6 +1,9 @@
 <%@ page import="static webapp.common.Constants.WINNER" %>
-<%@ page import="static webapp.common.Constants.MATCHES" %><%--
-  User: Mathieu
+<%@ page import="static webapp.common.Constants.MATCHES" %>
+<%@ page import="static webapp.common.Constants.*" %>
+<%@ page import="java.io.PrintWriter" %>
+<%--
+  Author: Mathieu
   Date: 09/10/2019
   Time: 00:13
   Note : This is the main page where the MatchGame will be played as well.
@@ -10,10 +13,7 @@
     <head>
         <title>MatchGame Demo</title>
         <!-- Latest compiled and minified CSS - only for production -->
-        <link rel="stylesheet" href="./../css/bootstrap.min.css">
-        <!-- compiled and minified bootstrap js library - only for production -->
-        <script src="./../js/bootstrap.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="./css/bootstrap.min.css">
     </head>
     <body>
         <div class="container">
@@ -21,22 +21,29 @@
                 <h1 class="text-center col-12">Select One, Two or Three Matches</h1>
                 <br>
                 <%
+                    // This part is the end of game when a winner was raised. Otherwise the game continues to be played
                     if (request.getAttribute(WINNER) != null) {
-                        out.println("<script type=\"text/javascript\">");
-                        out.println("alert(\"" + request.getAttribute(WINNER) + " has won this game.\");</script>");
-                        request.removeAttribute(WINNER);
-                        response.sendRedirect("../index.jsp");
+                        request.getRequestDispatcher("./index.jsp").forward(request, response);
                     } else if(request.getAttribute(MATCHES) != null) {
+                        // display last hit from the IA Player<
+                        if (request.getAttribute(BTN_IA_CHOICE) != null) {
+                            final String endSentence =
+                                    request.getAttribute(BTN_IA_CHOICE).equals('1') ? " was removed." : " were removed.";
+                            out.println("<br><div class=\"col-12 text-center\"><p class=\"font-weight-bold\">"
+                                            + request.getAttribute(BTN_IA_CHOICE) + endSentence + "</p><br>");
+                        }
                         out.println("<div class=\"col-12 text-center\">");
+                        // loading matches image
                         for (int i = 0; i < (int) request.getAttribute(MATCHES); i++) {
-                            out.println("<img src=\"./../fonts/Match.jpg\" alt=\"Match\">");
+                            out.println("<img src=\"./fonts/Match.jpg\" alt=\"Match\">");
                         }
                         out.println("</div>");
                     }
                 %>
                 <br>
+                <!-- The player selects one of the suggested options and submits -->
                 <div class="col-12 text-center">
-                    <form action="/matchgame" method="GET">
+                    <form action="/App/matchgame" method="GET">
                         <input type="submit" class="btn col-3" name="btn-player-choice" value="1"/>
                         <input type="submit" class="btn col-3" name="btn-player-choice" value="2"/>
                         <input type="submit" class="btn col-3" name="btn-player-choice" value="3"/>

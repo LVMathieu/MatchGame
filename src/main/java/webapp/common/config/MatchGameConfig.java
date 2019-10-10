@@ -6,6 +6,10 @@ import webapp.models.player.TrickyPlayer;
 import webapp.models.player.NoobiePlayer;
 import webapp.models.player.Player;
 
+
+/**
+ * This class is a final class. It aims to init all game configurations.
+ */
 public final class MatchGameConfig {
     private static int      matches     = 10;
     private static boolean  isPlaying   = true;
@@ -23,14 +27,6 @@ public final class MatchGameConfig {
         initConfig(levelMode);
     }
 
-    @Override
-    public String toString() {
-        return "MatchGameConfig[" +
-                "level=" + level.toString() + ',' +
-                "matches=" + matches + ']';
-    }
-
-
     /**
      * This method is used for choosing a range of matches during the game. The number depends on the level mode.
      * @param min min matches number value during the game depending on the level mode.
@@ -45,17 +41,27 @@ public final class MatchGameConfig {
         }
     }
 
+    /**
+     * This method initialises the username.
+     * @param username String username.
+     */
     private static void initUserPlayer(final String username) {
         user = username;
     }
 
+    /**
+     * This method reset to false state for starting the game.
+     */
     private static void initGameState() {
         isUserhasWon = isIAhasWon = false;
     }
 
     /**
      * This method is used for choosing a range of matches during the game. The number depends on the level mode.
-     * @param newLevel
+     * @param newLevel String level Mode selected by the player
+     *                 Case 1: Noobie is a low level: Random choice between 1 and 3
+     *                 Case 2: Medium is a middle level: Uses tactics by 4-peer
+     *                 Case 3: Expert is a highest level: Same than Medium but you are starting with 24 matches (impossible to win)
      */
     private static void initConfig(final String newLevel) {
         if (newLevel.equalsIgnoreCase(Level.MEDIUM.toString())) {

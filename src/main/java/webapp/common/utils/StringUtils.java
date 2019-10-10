@@ -2,12 +2,12 @@ package webapp.common.utils;
 
 
 /**
- * This class illustrated how we could create some Utils into the project
+ * This class is final. It illustrated how we could create some Utils into the project
  * Note : Does the same work than Apache commons-lang3 or Guava libs
  * Date : 10/10/2019
  * Time : 01:10
  */
-public class StringUtils {
+public final class StringUtils {
 
     /** Empty checks
      * It no longer trims the CharSequence.

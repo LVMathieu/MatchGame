@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import static java.lang.Integer.parseInt;
 import static webapp.common.Constants.*;
@@ -18,12 +17,13 @@ import static webapp.common.utils.StringUtils.isNullOrEmpty;
 
 /**
  * Created by Mathieu Le Veve on 09/10/2019
- * This class aims to provide a basic Servlet to the web client containing the match game logic
+ * This class aims to provide a basic Servlet to the web client containing the match game logic.
+ * It initialises some configuration and manages the game lifecycle
  *
  */
 @WebServlet(name = "MatchGameServlet")
 public class MatchGameServlet extends HttpServlet {
-    private final static String JSP_MATCHGAME_PATH = "./jsp/matchgame.jsp";
+    private final static String JSP_MATCHGAME_PATH = "./matchgame.jsp";
     private static MatchGame game = new MatchGame();
 
     protected void doPost(final HttpServletRequest request,
@@ -35,31 +35,31 @@ public class MatchGameServlet extends HttpServlet {
     protected void doGet(final HttpServletRequest request,
                          final HttpServletResponse response) throws ServletException, IOException {
 
-        // First Step of the game
+        // First Step of the game : init the config and set the player. Then, it continues to play and set attributes (>Round 1).
         if(!isNullOrEmpty(request.getParameter(MODE))
                 && !isNullOrEmpty(request.getParameter(USERNAME))
                 && isNullOrEmpty(request.getParameter(BTN_PLAYER_CHOICE))) {
             MatchGame.setMatchGame(request.getParameter(MODE), request.getParameter(USERNAME));
         } else if (isNullOrEmpty(request.getParameter(MODE)) && !isNullOrEmpty(request.getParameter(BTN_PLAYER_CHOICE))) {
+            // The player is running
             final int playerChoice = parseInt(request.getParameter(BTN_PLAYER_CHOICE));
             game.playUserTurn(playerChoice);
             if (game.isWinner()) {
+                // The player has won
                 request.setAttribute(WINNER, MatchGameConfig.getUsername());
             } else {
+                // The IA player is running
                 final int matchesRemoved = game.playIATurn();
-                request.setAttribute(BTN_IA_CHOICE, matchesRemoved);
+                request.setAttribute(BTN_IA_CHOICE, String.valueOf(matchesRemoved));
                 if (game.isWinner()) {
+                    // The IA player has won
                     request.setAttribute(WINNER, IA_NAME);
                 }
             }
         }
+        // The matches number is prepared to be returned to the JSP
         request.setAttribute(MATCHES, MatchGameConfig.getMatches());
-        System.out.println(game.toString());
-        PrintWriter out = response.getWriter();
-        out.println(game.toString());
-
         final RequestDispatcher requestDispatcher = request.getRequestDispatcher(JSP_MATCHGAME_PATH);
         requestDispatcher.forward(request, response);
-
     }
 }
